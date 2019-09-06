@@ -1,0 +1,49 @@
+diff -Naur grub-core/kern/corecmd.c grub-core/kern/corecmd.c
+--- grub-core/kern/corecmd.c	2019-04-09 07:05:36.000000000 +0700
++++ grub-core/kern/corecmd.c	2019-09-06 14:25:56.161919468 +0700
+@@ -46,7 +46,7 @@
+ 
+   var = argv[0];
+   val = grub_strchr (var, '=');
+-  if (! val)
++  if (! *val)
+     return grub_error (GRUB_ERR_BAD_ARGUMENT, "not an assignment");
+ 
+   val[0] = 0;
+diff -Naur grub-core/kern/disk.c grub-core/kern/disk.c
+--- grub-core/kern/disk.c	2019-03-25 22:27:05.000000000 +0700
++++ grub-core/kern/disk.c	2019-09-06 14:25:56.161919468 +0700
+@@ -233,8 +233,7 @@
+ 
+   if (! dev)
+     {
+-      grub_error (GRUB_ERR_UNKNOWN_DEVICE, N_("disk `%s' not found"),
+-		  name);
++      grub_errno = GRUB_ERR_NONE;
+       goto fail;
+     }
+   if (disk->log_sector_size > GRUB_DISK_CACHE_BITS + GRUB_DISK_SECTOR_BITS
+diff -Naur grub-core/kern/dl.c grub-core/kern/dl.c
+--- grub-core/kern/dl.c	2019-03-07 19:14:58.000000000 +0700
++++ grub-core/kern/dl.c	2019-09-06 14:25:56.161919468 +0700
+@@ -736,7 +736,7 @@
+   if (grub_no_modules)
+     return 0;
+ 
+-  if (! grub_dl_dir) {
++  if (! *grub_dl_dir) {
+     grub_error (GRUB_ERR_FILE_NOT_FOUND, N_("variable `%s' isn't set"), "prefix");
+     return 0;
+   }
+diff -Naur grub-core/kern/fs.c grub-core/kern/fs.c
+--- grub-core/kern/fs.c	2019-04-09 07:05:36.000000000 +0700
++++ grub-core/kern/fs.c	2019-09-06 14:25:56.161919468 +0700
+@@ -117,7 +117,7 @@
+   else if (device->net && device->net->fs)
+     return device->net->fs;
+ 
+-  grub_error (GRUB_ERR_UNKNOWN_FS, N_("unknown filesystem"));
++  grub_errno = GRUB_ERR_NONE;
+   return 0;
+ }
+ 

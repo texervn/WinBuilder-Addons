@@ -1,0 +1,1 @@
+This patch to disable some warnings that say: variable 'prefix' is not set; not an assignment... (grub2 for usb boot).

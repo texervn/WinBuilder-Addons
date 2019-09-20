@@ -1,0 +1,277 @@
+[Main]
+Title=Internet Explorer 11
+Description=Internet Explorer 11 for Windows 10
+Author=WindowsForum
+Date=2019.04.01
+Credits=
+Contact=
+Version=004
+Level=0
+Download_Level=0
+Selected=None
+Mandatory=None
+NoWarning=False
+History002=KYHI - One Script For Files, Shortcuts and Registry - Removed WoW64 Support Requirement - Date: 2018.12.05
+History003=ChrisR - Add Homepage, Search Engine, Favorites - 2019.01.07
+
+[Variables]
+%ProgramTitle%=Internet Explorer
+%ProgramExe%=iexplore.exe
+%ProgramFolder%=Internet Explorer
+%StartMenuFolder%=Network
+
+[Process]
+Echo,"Processing %ScriptTitle%..."
+If,ExistFile,%ProjectDir%\Core.script,AddInterface,%ProjectDir%\Core.script,InterfacePENetwork,""
+RunFromRam
+ExtractSectionFiles,%ScriptFile%,IE11_AddFiles
+//--
+// Add Favorites
+If,ExistDir,%GCustom%\IE11_Favorites,Retrieve,FOLDERSIZE,%GCustom%\IE11_Favorites,%IE11_FavoritesSize%
+If,%IE11_FavoritesSize%,Bigger,1,Begin
+  If,Not,ExistDir,%GTarget%\Users\Default\Favorites,DirMake,%GTarget%\Users\Default\Favorites
+  FileCopy,%GCustom%\IE11_Favorites\*,%GTarget%\Users\Default\Favorites
+End
+//--
+If,Not,#1,Equal,HiveLoaded,Begin
+  RegHiveLoad,Tmp_Default,%RegDefault%
+  RegHiveLoad,Tmp_Software,%RegSoftware%
+End
+//--
+Echo,"Add IE11 Registry..."
+Run,%ScriptFile%,IE11_Registry
+Echo,"Add %Search_ScrollBox% Search Engine..."
+If,ExistSection,%ScriptFile%,%Search_ScrollBox%_SearchEngine,Run,%ScriptFile%,%Search_ScrollBox%_SearchEngine
+Else,Run,%ScriptFile%,Google_SearchEngine
+//--
+If,Not,#1,Equal,HiveLoaded,Begin
+  RegHiveunLoad,Tmp_Default
+  RegHiveunLoad,Tmp_Software
+End
+//--
+Run,%ScriptFile%,IE11_Shortcuts
+
+[IE11_Shortcuts]
+If,%IE11StartMenuFolder_TextBox%-,Equal,-,Set,%IE11StartMenuFolder_TextBox%,%StartMenuFolder%
+If,%IE11Desktop_CheckBox%,Equal,True,AddShortcut,Desktop,,#$pProgramFiles#$p\Internet Explorer\iexplore.exe
+If,%IE11StartMenu_CheckBox%,Equal,True,AddShortcut,StartMenu,%IE11StartMenuFolder_TextBox%,#$pProgramFiles#$p\Internet Explorer\iexplore.exe
+If,%IE11StartMpin_CheckBox%,Equal,True,AddPin,StartMenu,,$Start_Menu\Programs\%IE11StartMenuFolder_TextBox%\Internet Explorer.lnk
+If,%IE11TaskBpin_CheckBox%,Equal,True,AddPin,TaskBar,,$Start_Menu\Programs\%IE11StartMenuFolder_TextBox%\Internet Explorer.lnk
+
+[IE11_AddFiles]
+\Program Files\Internet Explorer
+\Windows\System32\actxprxy.dll
+\Windows\System32\apphelp.dll
+\Windows\System32\apprepapi.dll
+\Windows\System32\atlthunk.dll
+\Windows\System32\browser.dll
+\Windows\System32\clbcatq.dll
+\Windows\System32\coloradapterclient.dll
+\Windows\System32\CoreMessaging.dll
+\Windows\System32\CoreUIComponents.dll
+\Windows\System32\cscapi.dll
+\Windows\System32\DataExchange.dll
+\Windows\System32\dcomp.dll
+\Windows\System32\ddraw.dll
+\Windows\System32\dinput8.dll
+\Windows\System32\dsound.dll
+;\Windows\System32\DXCore.dll (Win10 1903 in winre.wim)
+\Windows\System32\dxtmsft.dll
+\Windows\System32\dxtrans.dll
+\Windows\System32\ELSCore.dll
+\Windows\System32\ExplorerFrame.dll
+\Windows\System32\hlink.dll
+\Windows\System32\ie4uinit.exe
+\Windows\System32\ieadvpack.dll
+\Windows\System32\ieapfltr.dll
+\Windows\System32\iedkcs32.dll
+\Windows\System32\iepeers.dll
+\Windows\System32\ieproxy.dll
+\Windows\System32\iernonce.dll
+\Windows\System32\iesetup.dll
+\Windows\System32\iesysprep.dll
+\Windows\System32\ieui.dll
+\Windows\System32\ieuinit.inf
+\Windows\System32\inetcpl.cpl
+\Windows\System32\Macromed\Flash\activex.vch
+\Windows\System32\Macromed\Flash\Flash.ocx
+\Windows\System32\spool\drivers\color
+\Windows\System32\mf.dll
+\Windows\System32\mfcore.dll
+\Windows\System32\MFMediaEngine.dll
+\Windows\System32\mfmp4srcsnk.dll
+\windows\System32\mfnetcore.dll
+\windows\System32\mfnetsrc.dll
+\Windows\System32\mfperfhelper.dll
+\Windows\System32\mfplat.dll
+\Windows\System32\mfsvr.dll
+\Windows\System32\MSAudDecMFT.dll
+\Windows\System32\mscms.dll
+\Windows\System32\mscories.dll
+\Windows\System32\msctfuimanager.dll
+\Windows\System32\msfeeds.dll
+\Windows\System32\mskeyprotcli.dll
+\Windows\System32\msmpeg2vdec.dll
+\Windows\System32\msvproc.dll
+\Windows\System32\netprofm.dll
+\Windows\System32\npmproxy.dll
+\Windows\System32\occache.dll
+\Windows\System32\OnDemandConnRouteHelper.dll
+\Windows\System32\pcpksp.dll
+\Windows\System32\policymanager.dll
+\Windows\System32\profprov.dll
+\Windows\System32\profsvcext.dll
+\Windows\System32\RESAMPLEDMO.DLL
+\Windows\System32\seclogon.dll
+\Windows\System32\Sens.dll
+\Windows\System32\SettingSyncCore.dll
+\Windows\System32\sqmapi.dll
+\Windows\System32\srpapi.dll
+\Windows\System32\StructuredQuery.dll
+\Windows\System32\sxsstore.dll
+\Windows\System32\tsdiscon.exe
+\Windows\System32\twinapi.appcore.dll
+\Windows\System32\UIAnimation.dll
+\Windows\System32\url.dll
+\Windows\System32\VaultCli.dll
+\Windows\System32\Windows.Gaming.Input.dll
+\Windows\System32\Windows.Globalization.dll
+\Windows\System32\Windows.Media.dll
+\Windows\System32\Windows.Media.MediaControl.dll
+\Windows\System32\Windows.UI.dll
+\Windows\System32\WindowsCodecsExt.dll
+
+[Not Used]
+;\Windows\System32\webcheck.dll
+;\Windows\System32\tdc.ocx
+;\Windows\System32\mshtmler.dll
+;\Windows\System32\MshtmlDac.dll
+;\Windows\System32\msfeedsbs.dll
+;\Windows\System32\licmgr10.dll
+;\Windows\System32\inseng.dll
+;\Windows\System32\imgutil.dll
+;\Windows\System32\ieUnatt.exe
+;\Windows\System32\ddrawex.dll
+;\Windows\System32\atl.dll
+
+[IE11_Registry]
+Echo,
+If,%FullSoftware%,Equal,False,Begin
+  RegCopyKey,HKLM,Tmp_Software\Classes\MediaFoundation
+  RegCopyKey,HKLM,Tmp_Software\Macromedia
+  RegCopyKey,HKLM,"Tmp_Software\Microsoft\Internet Explorer"
+  RegCopyKey,HKLM,"Tmp_Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+End
+// IE11_AddReg.txt if needed
+If,ExistFile,%ScriptDir%\IE11_AddReg.txt,RegImportFile,%ScriptDir%\IE11_AddReg.txt
+RegWrite,HKLM,0x4,"Tmp_Software\Policies\Microsoft\Internet Explorer\Main",DisableFirstRunCustomize,1
+RegWrite,HKLM,0x4,"Tmp_Software\Microsoft\Internet Explorer\Main",EnableAutoUpgrade,0
+RegWrite,HKLM,0x1,"Tmp_Software\Microsoft\Internet Explorer\Main",Default_Page_URL,https://www.google.com/
+RegWrite,HKLM,0x1,"Tmp_Software\Microsoft\Internet Explorer\Main",Default_Search_URL,https://www.google.com
+RegWrite,HKLM,0x1,"Tmp_Software\Microsoft\Internet Explorer\Main","Search Page",https://www.google.com
+RegWrite,HKLM,0x1,"Tmp_Software\Microsoft\Internet Explorer\Main","Start Page",https://www.google.com/
+//-
+//- Thanks To Bob.Omb For Registry Trick For Pure IE11_x64
+If,%Architecture%,Equal,x64,Begin
+  RegWrite,HKLM,0x1,"Tmp_Software\Microsoft\Internet Explorer\Main",x86AppPath,"X:\Program Files\Internet Explorer\IEXPLORE.EXE"
+  RegWrite,HKLM,0x1,"Tmp_Software\Microsoft\Internet Explorer\Main",TabProcGrowth,0
+End
+//-
+If,Not,%HomePage_TextBox%-,Equal,-,RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Start Page",%HomePage_TextBox%
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\Main",AlwaysShowMenus,0
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\Main",CompatibilityFlags,0
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Enable Browser Extensions",yes
+RegWrite,HKLM,0x3,"Tmp_Default\Software\Microsoft\Internet Explorer\Main",Window_Placement,2c,00,00,00,02,00,00,00,03,00,00,00,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,00,00,00,00,00,00,00,00,00,04,00,00,d8,02,00,00
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\BrowserEmulation",AllSitesCompatibilityMode,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\DomainSuggestion",NextUpdateDate,230571383
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_LOCALMACHINE_LOCKDOWN",iexplore.exe,0
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\Privacy",ClearBrowsingHistoryOnExit,1
+//-
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",WarnOnClose,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",OpenAllHomePages,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",OpenInForeground,0
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",Groups,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",ThumbnailBehavior,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",NewTabPageShow,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",PopupsUseNewWindow,0
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",ShortcutBehavior,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",NTPMigrationVer,1
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Microsoft\Internet Explorer\TabbedBrowsing",NTPFirstRun,1
+//-
+RegWrite,HKLM,0x4,"Tmp_Default\Software\Policies\Microsoft\Internet Explorer\Restrictions",NoHelpItemSendFeedback,1
+//-
+RegWrite,HKLM,0x4,Tmp_Default\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu,{871C5380-42A0-1069-A2EA-08002B30309D},0
+RegWrite,HKLM,0x4,Tmp_Default\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel,{871C5380-42A0-1069-A2EA-08002B30309D},0
+
+[Baidu_SearchEngine]
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Search Page",http://www.baidu.com/
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes",DefaultScope,{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",Codepage,65001
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",DisplayName,Baidu
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",OSDFileURL,https://www.microsoft.com/cms/api/am/binary/RWiIg0
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",FaviconPath,"C:\Users\ChrisR\AppData\LocalLow\Microsoft\Internet Explorer\Services\search_{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}.ico"
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",FaviconURL,http://www.baidu.com/favicon.ico
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",SuggestionsURL_JSON,http://suggestion.baidu.com/su?wd={searchTerms}&action=opensearch&ie=utf-8&from=ie8
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",ShowSearchSuggestions,1
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CDAE57DD-EC91-4231-9084-F5CDB0B440DD}",URL,http://www.baidu.com/s?wd={searchTerms}&ie=utf-8
+
+[Bing_SearchEngine]
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Search Page",https://www.bing.com/
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes",DefaultScope,{0633EE93-D776-472f-A0FF-E1416B8B2E3A}
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",Codepage,65001
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",DisplayName,Bing
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",OSDFileURL,https://www.microsoft.com/cms/api/am/binary/RWiD3v
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",FaviconURL,http://www.bing.com/favicon.ico
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",ShowSearchSuggestions,1
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",URL,http://www.bing.com/search?q={searchTerms}&form=IE8SRC&src=IE-SearchBox
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}",SuggestionsURL,http://api.bing.com/qsml.aspx?query={searchTerms}&market={Language}&form=IE8SSC&maxwidth={ie:maxWidth}&rowheight={ie:rowHeight}&sectionHeight={ie:sectionHeight}
+
+[DuckDuckGo_SearchEngine]
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Search Page",https://duckduckgo.com/
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes",DefaultScope,{466E400E-7433-4D04-BC72-310E0C07BD74}
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",Codepage,65001
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",DisplayName,DuckDuckGo
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",OSDFileURL,https://duckduckgo.com/opensearch.xml
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",FaviconPath,"X:\Users\Administrator\AppData\LocalLow\Microsoft\Internet Explorer\Services\search_{466E400E-7433-4D04-BC72-310E0C07BD74}.ico"
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",FaviconURL,https://duckduckgo.com/favicon.ico
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",SuggestionsURL_JSON,https://duckduckgo.com/ac/?q={searchTerms}&type=list
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",ShowSearchSuggestions,1
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{466E400E-7433-4D04-BC72-310E0C07BD74}",URL,https://duckduckgo.com/?q={searchTerms}
+
+[Google_SearchEngine]
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Search Page",https://www.google.com
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes",DefaultScope,{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",DisplayName,Google
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",OSDFileURL,https://www.microsoft.com/cms/api/am/binary/RWiNsg
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",FaviconPath,"C:\Users\ChrisR\AppData\LocalLow\Microsoft\Internet Explorer\Services\search_{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}.ico"
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",FaviconURL,https://www.google.com/favicon.ico
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",ShowSearchSuggestions,1
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",URL,https://www.google.com/search?q={searchTerms}&sourceid=ie7&rls=com.microsoft:{language}:{referrer:source}&ie={inputEncoding?}&oe={outputEncoding?}
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{B0AAC444-A3CD-4A2D-A12F-DE0DAED014E3}",SuggestionsURL,https://www.google.com/complete/search?q={searchTerms}&client=ie8&mw={ie:maxWidth}&sh={ie:sectionHeight}&rh={ie:rowHeight}&inputencoding={inputEncoding}&outputencoding={outputEncoding}
+
+[Yahoo!_SearchEngine]
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Search Page",https://www.yahoo.com/
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes",DefaultScope,{8945C165-7FB3-46E6-9584-4C5ABC44215F}
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",DisplayName,Yahoo!
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",OSDFileURL,https://www.microsoft.com/cms/api/am/binary/RWixRc
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",FaviconPath,"C:\Users\ChrisR\AppData\LocalLow\Microsoft\Internet Explorer\Services\search_{8945C165-7FB3-46E6-9584-4C5ABC44215F}.ico"
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",FaviconURL,http://search.yahoo.com/favicon.ico
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",ShowSearchSuggestions,1
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",URL,https://search.yahoo.com/search?p={searchTerms}&b={startPage?}&fr=ie8
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{8945C165-7FB3-46E6-9584-4C5ABC44215F}",SuggestionsURL,https://ie.search.yahoo.com/os?appid=ie8&command={searchTerms}
+
+[Yandex_SearchEngine]
+RegWrite,HKLM,0x1,"Tmp_Default\Software\Microsoft\Internet Explorer\Main","Search Page",https://www.yandex.ru/
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes",DefaultScope,{CBE368BB-EC2F-4434-8722-2C14F8B461F9}
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",Codepage,65001
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",DisplayName,Yandex
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",OSDFileURL,https://www.microsoft.com/cms/api/am/binary/RWivg6
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",FaviconPath,"C:\Users\ChrisR\AppData\LocalLow\Microsoft\Internet Explorer\Services\search_{CBE368BB-EC2F-4434-8722-2C14F8B461F9}.ico"
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",FaviconURL,http://yandex.ru/favicon.ico
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",SuggestionsURL_JSON,http://suggest.yandex.net/suggest-ff.cgi?part={searchTerms}
+RegWrite,HKLM,0x4,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",ShowSearchSuggestions,1
+RegWrite,HKLM,0x1,"Tmp_Default\SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{CBE368BB-EC2F-4434-8722-2C14F8B461F9}",URL,http://yandex.ru/yandsearch?text={searchTerms}&from=os
+
+[Favorites_OpenDir]
+If,Not,ExistDir,%GCustom%\IE11_Favorites,DirMake,%GCustom%\IE11_Favorites
+OpenDir,%GCustom%\IE11_Favorites

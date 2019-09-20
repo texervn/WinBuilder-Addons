@@ -1,1 +1,6 @@
+Some plugins to use with WB.
 
+1) Python3: include pip, idle, editplus (optional to edit and compile py file).
+Note: Run pip --no-cache-dir install packagename in WinPE.
+
+2) ...

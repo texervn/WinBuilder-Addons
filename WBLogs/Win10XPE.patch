@@ -1,0 +1,123 @@
+diff -Naur Win10XPE/CreateISO.script Win10XPE/CreateISO.script
+--- Win10XPE/CreateISO.script	2019-09-20 23:27:36.424470700 +0700
++++ Win10XPE/CreateISO.script	2019-09-21 11:42:15.899704200 +0700
+@@ -16,7 +16,7 @@
+ [Variables]
+ %Debug_Display_CheckSysFiles%=False
+ %ImageName%=%ProjectName%_%Architecture%
+-%ISOFileName%=%BaseDir%\%ProjectName%_%Architecture%.ISO
++%ISOFileName%=%BaseDir%\%ProjectName%_%Architecture%.iso
+ %BcdEditExe%=%GTools%\%Architecture%\BCDBoot\bcdedit.exe
+ %tmout%=5
+ %Usb7iceExe%=%GTools%\Usb7ice.exe
+diff -Naur Win10XPE/Features/Config.Script Win10XPE/Features/Config.Script
+--- Win10XPE/Features/Config.Script	2019-09-10 05:07:47.779029000 +0700
++++ Win10XPE/Features/Config.Script	2019-09-21 21:18:55.453234500 +0700
+@@ -213,11 +213,11 @@
+ RegWrite,HKLM,0x4,Tmp_System\ControlSet001\Control\Lsa,LimitBlankPasswordUse,0
+ // Computer Name
+ System,ERROROFF,5
+-RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ComputerName,ComputerName,%ProjectName%
+-RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ActiveComputerName,ComputerName,%ProjectName%
+-RegWrite,HKLM,0x1,Tmp_System\ControlSet001\services\Tcpip\Parameters,"NV Hostname",%ProjectName%
+-RegWrite,HKLM,0x1,Tmp_System\ControlSet001\services\Tcpip\Parameters,Hostname,%ProjectName%
+-RegWrite,HKLM,0x1,"Tmp_System\ControlSet001\Control\Session Manager\Environment",ComputerName,%ProjectName%
++//RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ComputerName,ComputerName,%ProjectName%
++//RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ActiveComputerName,ComputerName,%ProjectName%
++//RegWrite,HKLM,0x1,Tmp_System\ControlSet001\services\Tcpip\Parameters,"NV Hostname",%ProjectName%
++//RegWrite,HKLM,0x1,Tmp_System\ControlSet001\services\Tcpip\Parameters,Hostname,%ProjectName%
++//RegWrite,HKLM,0x1,"Tmp_System\ControlSet001\Control\Session Manager\Environment",ComputerName,%ProjectName%
+ 
+ [EditReg_Software]
+ If,%FullSoftware%,Equal,True,Run,%ScriptFile%,EditReg_FullSoftware
+@@ -242,9 +242,9 @@
+ RegWrite,HKLM,0x4,Tmp_Software\Microsoft\Windows\CurrentVersion\Personalization,AllowPersonalization,1
+ // Computer Name
+ System,ERROROFF,3
+-RegWrite,HKLM,0x1,"Tmp_software\Microsoft\Windows NT\CurrentVersion",RegisteredOwner,%ProjectName%
++//RegWrite,HKLM,0x1,"Tmp_software\Microsoft\Windows NT\CurrentVersion",RegisteredOwner,%ProjectName%
+ RegWrite,HKLM,0x4,"Tmp_software\Microsoft\Windows NT\CurrentVersion\WinPE",SkipWaitForNetwork,0
+-RegWrite,HKLM,0x4,"Tmp_software\Microsoft\Windows NT\CurrentVersion\WinPE",SetComputerName,0
++//RegWrite,HKLM,0x4,"Tmp_software\Microsoft\Windows NT\CurrentVersion\WinPE",SetComputerName,0
+ // Logo
+ RegWrite,HKLM,0x1,Tmp_Software\Microsoft\Windows\CurrentVersion\OEMInformation,Manufacturer,WinXPE
+ RegWrite,HKLM,0x1,Tmp_Software\Microsoft\Windows\CurrentVersion\OEMInformation,SupportURL,http://win10se.cwcodes.net/Compressed/index.php
+diff -Naur Win10XPE/Features/CoreOptions.Script Win10XPE/Features/CoreOptions.Script
+--- Win10XPE/Features/CoreOptions.Script	2019-09-19 23:40:42.189504100 +0700
++++ Win10XPE/Features/CoreOptions.Script	2019-09-22 09:01:58.922460000 +0700
+@@ -85,6 +85,15 @@
+   Run,%ScriptFile%,CheckComputerName
+   Run,%ScriptFile%,RegComputerName
+ End
++Else,Begin
++  RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ComputerName,ComputerName,%ProjectName%
++  RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ActiveComputerName,ComputerName,%ProjectName%
++  RegWrite,HKLM,0x1,Tmp_System\ControlSet001\services\Tcpip\Parameters,"NV Hostname",%ProjectName%
++  RegWrite,HKLM,0x1,Tmp_System\ControlSet001\services\Tcpip\Parameters,Hostname,%ProjectName%
++  RegWrite,HKLM,0x1,"Tmp_System\ControlSet001\Control\Session Manager\Environment",ComputerName,%ProjectName%
++  RegWrite,HKLM,0x1,"Tmp_software\Microsoft\Windows NT\CurrentVersion",RegisteredOwner,%ProjectName%
++  RegWrite,HKLM,0x4,"Tmp_software\Microsoft\Windows NT\CurrentVersion\WinPE",SetComputerName,0
++End
+ Run,%ScriptFile%,NumLock
+ If,%Shell%,Equal,Explorer,Run,%ScriptFile%,PowerOptions
+ Run,%ScriptFile%,ControlVolume
+@@ -125,7 +134,7 @@
+ 
+ [RegComputerName]
+ System,ERROROFF,6
+-RegWrite,HKLM,0x2,Tmp_Software\Classes\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D},LocalizedString,#$pComputerName#$p
++//RegWrite,HKLM,0x2,Tmp_Software\Classes\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D},LocalizedString,#$pComputerName#$p
+ RegWrite,HKLM,0x1,"Tmp_System\ControlSet001\Control\Session Manager\Environment",ComputerName,%ComputerName%
+ RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ComputerName,ComputerName,%ComputerName%
+ RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ActiveComputerName,ComputerName,%ComputerName%
+diff -Naur Win10XPE/Features/WinApps.Script Win10XPE/Features/WinApps.Script
+--- Win10XPE/Features/WinApps.Script	2019-04-01 15:32:16.825549700 +0700
++++ Win10XPE/Features/WinApps.Script	2019-09-21 15:35:12.589833600 +0700
+@@ -65,7 +65,7 @@
+ \Windows\System32\wiaservc.dll
+ 
+ [WinApps_Wordpad_AddFiles]
+-\Program Files\windows nt\accessories
++\Program Files\Windows NT\Accessories
+ 
+ [WinApps_PhotoViewer_AddFiles]
+ ; Not required: \Program Files\Windows Photo Viewer\ImagingDevices.exe(.mui) and PhotoAcq.dll
+diff -Naur Win10XPE/script.project Win10XPE/script.project
+--- Win10XPE/script.project	2019-09-16 04:38:21.154055800 +0700
++++ Win10XPE/script.project	2019-09-22 08:32:50.524206000 +0700
+@@ -44,7 +44,7 @@
+ %EditionID%=
+ %SourceVersion%=
+ %SourceBuild%=
+-%Architecture%=
++%Architecture%=x86
+ %Language%=
+ %FallBackLanguage%=
+ //-
+@@ -115,6 +115,7 @@
+ Image_Donate=btn_donate.gif,0,5,443,247,86,25,https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9WZ5EDAMPH6SE
+ Homepage_WebLabel="Win10XPE Home Page",0,10,432,278,105,18,http://theoven.org/index.php?topic=2421.0
+ SupportLog_CheckBox="Enable Support Log",0,3,427,297,120,18,False,"__Enable extended Win10XPE Support Log: SupportLog_Win10XPE_YYMMDDHHMM00.7z"
++HostOS_CheckBox="Set x86 Host",1,3,349,149,173,18,False,"__Build x86 WIM on x64 Host OS"
+ 
+ [ResetValue]
+ Run,%ScriptFile%,ResetGlobalVar
+@@ -195,7 +196,8 @@
+ TXTAddLine,%Gtemp%\HostOSArch.cmd,"Exit 64",Append
+ End
+ ShellExecute,Hide,cmd.exe,"/C #$q%Gtemp%\HostOSArch.cmd#$q"
+-Set,%HostOSArch%,x%ExitCode%,Permanent
++If,%HostOS_CheckBox%,Equal,True,Set,%HostOSArch%,x86,Permanent
++Else,%HostOSArch%,x%ExitCode%,Permanent
+ 
+ [DeleteWithCmd_Examples]
+ //If,ExistDir,%GTemp%,Shellexecute,Hide,cmd.exe,"/C rd /s /q #$q%GTemp%#$q"
+@@ -283,7 +285,7 @@
+ Set,%EditionID%,"",Permanent
+ Set,%SourceVersion%,"",Permanent
+ Set,%SourceBuild%,"",Permanent
+-Set,%Architecture%,"",Permanent
++Set,%Architecture%,x86,Permanent
+ Set,%Language%,"",Permanent
+ Set,%FallBackLanguage%,"",Permanent
+ Set,%HostOSArch%,x86,Permanent

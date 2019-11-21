@@ -1,6 +1,6 @@
 diff -Naur Win10XPE/CreateISO.script Win10XPE/CreateISO.script
---- Win10XPE/CreateISO.script	2019-09-20 23:27:36.424470700 +0700
-+++ Win10XPE/CreateISO.script	2019-09-21 11:42:15.899704200 +0700
+--- Win10XPE/CreateISO.script	2019-11-19 15:37:19.000000000 +0700
++++ Win10XPE/CreateISO.script	2019-11-21 08:32:07.277684453 +0700
 @@ -16,7 +16,7 @@
  [Variables]
  %Debug_Display_CheckSysFiles%=False
@@ -9,10 +9,20 @@ diff -Naur Win10XPE/CreateISO.script Win10XPE/CreateISO.script
 +%ISOFileName%=%BaseDir%\%ProjectName%_%Architecture%.iso
  %BcdEditExe%=%GTools%\%Architecture%\BCDBoot\bcdedit.exe
  %tmout%=5
- %Usb7iceExe%=%GTools%\Usb7ice.exe
+ %DisplayMenu%=False
+@@ -123,6 +123,9 @@
+ DirDeleteQ,%GISO%\sources
+ DirMake,%GISO%\sources
+ //-
++Echo, "Patching wpeutil.dll to replace MININT..."
++ShellExecute,Hide,%GTools%\binmay.exe,"-s 4D0049004E0049004E0054 -r 570049004E005800500045 -U #$q%GTarget_Sys%\wpeutil.dll#$q"
++//-
+ Echo,"Packing boot.wim image file, Be patient..."
+ //ShellExecute,Open,%GTools%\wimlib-imagex.exe,"capture #$q%GTarget%#$q #$q%GISO%\sources\boot.wim#$q #$q%ImageName%#$q #$q%ImageName%#$q --boot --flags=9 --compress=LZX --verbose"
+ If,%CompressMax_CheckBox%,Equal,True,ShellExecute,%OpenHideOutput%,cmd.exe,"/D /C Echo Packing boot.wim image file, Be patient...&Echo.&wimlib-imagex.exe capture #$q%GTarget%#$q #$q%GISO%\sources\boot.wim#$q #$q%ImageName%#$q #$q%ImageName%#$q --boot --flags=9 --compress=LZX --verbose",%GTools%
 diff -Naur Win10XPE/Features/Config.Script Win10XPE/Features/Config.Script
---- Win10XPE/Features/Config.Script	2019-09-10 05:07:47.779029000 +0700
-+++ Win10XPE/Features/Config.Script	2019-09-21 21:18:55.453234500 +0700
+--- Win10XPE/Features/Config.Script	2019-11-07 19:31:09.000000000 +0700
++++ Win10XPE/Features/Config.Script	2019-11-21 08:07:21.709147636 +0700
 @@ -213,11 +213,11 @@
  RegWrite,HKLM,0x4,Tmp_System\ControlSet001\Control\Lsa,LimitBlankPasswordUse,0
  // Computer Name
@@ -43,8 +53,8 @@ diff -Naur Win10XPE/Features/Config.Script Win10XPE/Features/Config.Script
  RegWrite,HKLM,0x1,Tmp_Software\Microsoft\Windows\CurrentVersion\OEMInformation,Manufacturer,WinXPE
  RegWrite,HKLM,0x1,Tmp_Software\Microsoft\Windows\CurrentVersion\OEMInformation,SupportURL,http://win10se.cwcodes.net/Compressed/index.php
 diff -Naur Win10XPE/Features/CoreOptions.Script Win10XPE/Features/CoreOptions.Script
---- Win10XPE/Features/CoreOptions.Script	2019-09-19 23:40:42.189504100 +0700
-+++ Win10XPE/Features/CoreOptions.Script	2019-09-22 09:01:58.922460000 +0700
+--- Win10XPE/Features/CoreOptions.Script	2019-09-19 23:40:42.000000000 +0700
++++ Win10XPE/Features/CoreOptions.Script	2019-11-21 08:10:24.376699801 +0700
 @@ -85,6 +85,15 @@
    Run,%ScriptFile%,CheckComputerName
    Run,%ScriptFile%,RegComputerName
@@ -70,9 +80,31 @@ diff -Naur Win10XPE/Features/CoreOptions.Script Win10XPE/Features/CoreOptions.Sc
  RegWrite,HKLM,0x1,"Tmp_System\ControlSet001\Control\Session Manager\Environment",ComputerName,%ComputerName%
  RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ComputerName,ComputerName,%ComputerName%
  RegWrite,HKLM,0x1,Tmp_System\ControlSet001\Control\ComputerName\ActiveComputerName,ComputerName,%ComputerName%
+diff -Naur Win10XPE/Features/PENetwork.Script Win10XPE/Features/PENetwork.Script
+--- Win10XPE/Features/PENetwork.Script	2019-01-07 12:08:17.000000000 +0700
++++ Win10XPE/Features/PENetwork.Script	2019-11-21 08:30:11.689946784 +0700
+@@ -194,7 +194,7 @@
+ 0=eJxz8jVjYQADMyDWAGIBKGZkUIBIQOVHApCSkvqPjCkxg5AacvVjk0d3Nz5/IIsh0/+v9GHF2NQOF/2Uhh85gBK9gwUAAKCom0V4nOMNSM1LLSnPL8rWS8otYBgFIwyYsUBoLxzyt1ab1TEwAQAzHAf5DYEjVAEAAAACAAAAKAAAAEoAAAAAAAAAAQAAAAAAAAAAAAAA
+ 
+ [Folder]
+-PENetwork.ini=4285,5714
++PENetwork.ini=4344,5792
+ 
+ [EncodedFile-AuthorEncoded-PENetwork4848.ico]
+ lines=0
+@@ -205,6 +205,7 @@
+ 
+ [EncodedFile-Folder-PENetwork.ini]
+ lines=1
+-0=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
+-1=igG4I2QhwuNtTakNbSXTkck33uQ3Ju0b4WftmciEyd0p4JeQ+EF9Up1Ul3hQn1ux2ou75Om6Mznc/U2x60q7xiXEp3qlWHoB283FpdMfV7izF0ck7PXEGo08UL8Mx27fe0l0kp66soeW/pOGW69jEQdG2Hlv9mgg/F0Fs2pzd1j75KXj5qF0+YI92SkJrr+yTRhnQO1yfIy0/v1gH3bsjLzxPWrb+FTT4TIfpHecW4bPv28/HzCyhB/sKCktQGXPLycdS1oqI8onnd9JJlTVJqLXtcestLDtvfdsTVC9C7LV/P42/5emy+lh+DlDFIGxvjtctlt7yfT2lbctdJUhz8d0DOajme0iije9066+ccbvvHqF38fv0+Zd8H2t5vjzp9Wt9FDpUzXd+TKxXbiKnfj9AlNWpk6XxKVqNGGo/Bkfc2o146V2q95J61dCmSI02CuWaUKsXkSpM0prJTJXDqeMlyxkbth5GzM/ZvJfH8XdG1KCPmGYv9rF3N4QycZ1vG/I79tGM8fSN8xBvqwQvq93IdU+fC/PgAnh8DpfqtG1U/iaUus1K9vS/ypHBWpaI81zPYGZUc18fk13pGJGlmU8r79YQPjGVSOVmUzKAGlG/7chQzg5L16xDP2BiR/NlTbuYkx7xdigl9OZ2bNalaICLkdXMZPr+XiknSK0RYMmZKu2CrIWoTD+bVY5oXepyYJanoWV51OVJdfhSLHUO5UX5eJD2O8iMpOZFqaXmFMyKZPeL5wG3LTv3ZkKx5p+phvkyoLlIy219e/vxHtbq8wrlPnVwVmUndDqsrlvPUUadZhpvr5OQ5dfqyc5w6vfnym1Q8th7H2islr6njMiO3nJygTkt2PlCnJV8ukJ8H1NmPPweIcbm5X0ynijqtTJ7zpZUoWziNWtY0DYfMVdRcibxieUo8j9BzlHpKE299blJvIXYmk5+T1JVu5yM5cX6aBDszSI3x00rXM4KcuD6ldDcTSInrU0pWGUCsRGXb9ii8DSXIK9bPcvmkrdXx6dE75gNp8XtX87V18XuI1he/45wlnrHbFf/FJhy/+0tdx++fK35vVVda/B7j+LzxO889sY37nzB+j9U3HL/HuOyeLFc+zNWPWPzu7133id/D8+B2FBOi+5j43a+lUPwepv588Xv9ukGq3srG7yHNxOP3ENfHxu/hWvvj93r6EvF7fX3TtRSK3/0xrhu/x2MLPX6vozVj4TpqO36PU9vxe3gdYB2/r+P333b8PoKxVF458XsdXyh+9/PJ39JX9WjT6SP8vY2Rh07XTMiLSkr+n5OuLT3aq+2c2vadHfrlE77zJkSdjsUX0yCWXfKcPg49vkyRoOJKM/rc9taWU5t+P4XDbtM0nvRZaFW+P6b2R46mbTxh8r8z8KyxWV3IIVeAcPckjjju/wZ5AxaM+eQG7VFeeHPN0NrTOgdd56DrHHSdg65z0HUOus5B1znoOgdd56DrHHSdg65z0HUOep8cNJRnurmpu8Pxp2RZnFdx6qX/B8mL0ad4nOMNcPVLLSnPL8rWy8zLZBgFIwxsa4HQBQLY5bdk3JnJwAQA2M8JSOYHVkEBAAAAAgAAACkAAABwEAAAAAAAAAEAAAAAAAAAAAAAAA
++0=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
++1=/g036U/gnNR5h17tEv1GxBv/V5XopLWs+oh0xz2egksg5c+yU8PsLH1IodakmXbwg8E9ByHXzMY6MbKnQD0EaMw8eGWhvQjgBfjsTknl5hzm3anSMvlxOR6bPmUyXvgfKkJqU+r68xoX53InU3V5vr6Mzks/W2D+3KVxmX1p1u1QFoBy+/VtdC/2pkGTqem7PXQap08QI8s1v7feNlU3J9NaXsLW2vTN8++oqu5dHKX34IoRgEy5b0tu7RV/EVovbxxDnSLQmppb5PE23I5PB9Al9her8OuAOFrzBPXLfhFrb5bIToH/kq43LtO8wnT2GgBP6dCC2pBbj4CnFUtaKmPKb53vSSuSYpteYel97yzOH627a6uhF6v+WrecItX40t1PIjkDICaSNrvPa53JYP82ltM3eVJM0hf83kvJLjKY0yptetsn7J4bd/GbWPP6zfp+KHSNuH7dGkT+u7yKHzpuU9uVKxDYX+FQxTUqNClsmnZTUqpMkYHHlva9TL5EqtF++8S5fCHGkS7LWkVCk2V5qkEZWdKkFSl5fMMzd6Vw/P0ri/+CRzeE3XpKxYZizus1Yxk9P3nm1bszzu07b19K3yEW+pB8+p3/NqrMmF+fEhPD8BSv2LPbp+jKUqs9K9vafypHhWpaM83zO4GRWP6yPya10rkrSzKe39usoHlmVSdbIozqD6lG+HchQ7g+L6tYlnZI1I4eypbubEY94exYShnM7PmnQtEBHy+rmMnONLxcT0GhGWjJnSHthqjNrGg3n1iOaGHidmSTp65qsqR6rKj8pix1huVD8vYo+j/UhKTqRbmq94RsTZI55y3HHsNJwNcc3bRQ8LZUJVkZLd/nyF8x/d6nzFc58quToyY90Oiqss56miTrMMP9epk+dU6cvNcar0FspvUvG4ehwZr5S8porLjtzq5ARVWnLzgSothXKB+nlAlf2Ec4AyLj/3K9Oppk4rU+Z8aSVyC6dR651RKTg4V9FzJXyV5SnleYSZo1RT2nirc5NqC3Ezmfo5SVXpbj5SJ85Pk+BmBqkxflrpZkZQJ65PKd3PBFLi+pSSdQZQVqK2bXcU3oES+CrrZ3X52Naq+MzoHfOBtPi9Y/jaqvg9RhuK33HOEk8K7qn/xROP38OlruP3zxW/N4srLX4v4/i88bvMPbGNe58wfi+rbzx+L+NyezKvfNirH2Xxe7h33Sd+j8+Du1FMjO5j4vewlmLxe5z688Xv1esGqXrLG7/HNFMev8e4PjZ+j9c6HL9X0+eI36vrm66lWPwejnH9+L08tjDj9ypaOxauonbj93JqN36PrwOs4/d1/P7bjt+HMJbyVSd+r+KLxe9hPj4jpOvRojNU+KshwwCdqZmYF2VK+f+flo4e3dV2PqNk+842/X6L3HkTo07HEoppEMseec4QhxlfpkjQcaUdfe4Eayupbb+fwuG2aRpP+iy0Lj8cU4cjR9s2ngj+HxMya9wqLuTgFSDcPYkjjv8fTt6CBWM+uUF7lefBXDO29rTOQdc56DoHXeeg6xx0nYOuc9B1DrrOQdc56DoHXeeg6xx0nYPeJweN5Zl+burvcHyTLEvyak6z9P8AU33xV3ic4w1w9UstKc8vytbLzMtkGAUjDNS0QujVAtjlFSzjLzEwAQDRlghDumYTiAEAAAACAAAAKQAAAKsQAAAAAAAAAQAAAAAAAAAAAAAA
++
+ 
 diff -Naur Win10XPE/Features/WinApps.Script Win10XPE/Features/WinApps.Script
---- Win10XPE/Features/WinApps.Script	2019-04-01 15:32:16.825549700 +0700
-+++ Win10XPE/Features/WinApps.Script	2019-09-21 15:35:12.589833600 +0700
+--- Win10XPE/Features/WinApps.Script	2019-04-01 15:32:16.000000000 +0700
++++ Win10XPE/Features/WinApps.Script	2019-11-21 08:12:54.428340149 +0700
 @@ -65,7 +65,7 @@
  \Windows\System32\wiaservc.dll
  
@@ -82,10 +114,19 @@ diff -Naur Win10XPE/Features/WinApps.Script Win10XPE/Features/WinApps.Script
  
  [WinApps_PhotoViewer_AddFiles]
  ; Not required: \Program Files\Windows Photo Viewer\ImagingDevices.exe(.mui) and PhotoAcq.dll
-diff -Naur Win10XPE/script.project Win10XPE/script.project
---- Win10XPE/script.project	2019-09-16 04:38:21.154055800 +0700
-+++ Win10XPE/script.project	2019-09-22 08:32:50.524206000 +0700
-@@ -44,7 +44,7 @@
+diff -Naur Win10XPE/Folder.Project Win10XPE/Folder.Project
+--- Win10XPE/Folder.Project	2018-12-15 19:50:31.000000000 +0700
++++ Win10XPE/Folder.Project	2019-11-21 08:25:07.270639980 +0700
+@@ -12,4 +12,4 @@
+ 
+ [Links]
+ Projects\MyPlugins\*.*
+-Projects\MoPlugins\*.*
++Projects\MyAddons\*.*
+diff -Naur Win10XPE/Script.project Win10XPE/Script.project
+--- Win10XPE/Script.project	2019-11-16 23:33:47.000000000 +0700
++++ Win10XPE/Script.project	2019-11-21 08:19:32.823407953 +0700
+@@ -45,7 +45,7 @@
  %EditionID%=
  %SourceVersion%=
  %SourceBuild%=
@@ -94,7 +135,7 @@ diff -Naur Win10XPE/script.project Win10XPE/script.project
  %Language%=
  %FallBackLanguage%=
  //-
-@@ -115,6 +115,7 @@
+@@ -117,6 +117,7 @@
  Image_Donate=btn_donate.gif,0,5,443,247,86,25,https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9WZ5EDAMPH6SE
  Homepage_WebLabel="Win10XPE Home Page",0,10,432,278,105,18,http://theoven.org/index.php?topic=2421.0
  SupportLog_CheckBox="Enable Support Log",0,3,427,297,120,18,False,"__Enable extended Win10XPE Support Log: SupportLog_Win10XPE_YYMMDDHHMM00.7z"
@@ -102,17 +143,17 @@ diff -Naur Win10XPE/script.project Win10XPE/script.project
  
  [ResetValue]
  Run,%ScriptFile%,ResetGlobalVar
-@@ -195,7 +196,8 @@
+@@ -197,7 +198,8 @@
  TXTAddLine,%Gtemp%\HostOSArch.cmd,"Exit 64",Append
  End
- ShellExecute,Hide,cmd.exe,"/C #$q%Gtemp%\HostOSArch.cmd#$q"
+ ShellExecute,Hide,cmd.exe,"/D /C #$q%Gtemp%\HostOSArch.cmd#$q"
 -Set,%HostOSArch%,x%ExitCode%,Permanent
 +If,%HostOS_CheckBox%,Equal,True,Set,%HostOSArch%,x86,Permanent
-+Else,%HostOSArch%,x%ExitCode%,Permanent
++Else,Set,%HostOSArch%,x%ExitCode%,Permanent
  
  [DeleteWithCmd_Examples]
- //If,ExistDir,%GTemp%,Shellexecute,Hide,cmd.exe,"/C rd /s /q #$q%GTemp%#$q"
-@@ -283,7 +285,7 @@
+ //If,ExistDir,%GTemp%,Shellexecute,Hide,cmd.exe,"/D /C rd /s /q #$q%GTemp%#$q"
+@@ -285,7 +287,7 @@
  Set,%EditionID%,"",Permanent
  Set,%SourceVersion%,"",Permanent
  Set,%SourceBuild%,"",Permanent
